@@ -77,6 +77,10 @@ int main(int argc, char **argv)
 		if (1) {
 			printf("[%10d] %08x ", i, val);
 
+			/*
+			 * Don't bother.
+			 * Just keep it ugly.
+			 */
 			if (val == 0xaa995566)
 				printf(" SYNC\n");
 			else if (val == 0x000000BB)
@@ -94,6 +98,8 @@ int main(int argc, char **argv)
 				printf("Bus Width Detect\n");
 			else if (val == 0x30004000)
 				printf("Write to FDRI\n");
+			else if (val == 0x30008001)
+				printf("Write to CMD\n");
 			else if ((val & 0xf0000000) == 0x30000000) {
 				int regs;
 
