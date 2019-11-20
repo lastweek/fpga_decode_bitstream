@@ -24,8 +24,8 @@
 #define REG_FDRI	2
 
 /*
- * 30002001 write to FAR
- * 28006000 Read from FDRO
+ * This file can parse .rba and .rbt file
+ * They are ASICC files.
  */
 int main(int argc, char **argv)
 {
