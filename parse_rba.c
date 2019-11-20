@@ -54,7 +54,7 @@ int main(int argc, char **argv)
 	}
 
 	nr_words = atoi(str_nr_words_to_parse);
-	printf("fname: %s nr_words: %d\n", fname, nr_words);
+	printf("File Name: %s\n", fname);
 
 	if (nr_words == -1)
 		nr_words = INT_MAX;
@@ -92,6 +92,8 @@ int main(int argc, char **argv)
 				p_idcode = true;
 			} else if (val == 0x11220044)
 				printf("Bus Width Detect\n");
+			else if (val == 0x30004000)
+				printf("Write to FDRI\n");
 			else if ((val & 0xf0000000) == 0x30000000) {
 				int regs;
 

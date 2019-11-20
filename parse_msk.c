@@ -72,6 +72,8 @@ int main(int argc, char **argv)
 		return 0;
 	}
 
+	printf("File Name: %s\n", fname);
+
 	i = 0;
 	nr_words /= 4;
 
@@ -101,6 +103,8 @@ int main(int argc, char **argv)
 				p_idcode = true;
 			} else if (val == 0x11220044)
 				printf("Bus Width Detect\n");
+			else if (val == 0x30004000)
+				printf("Write to FDRI\n");
 			else if ((val & 0xf0000000) == 0x30000000) {
 				int regs;
 
