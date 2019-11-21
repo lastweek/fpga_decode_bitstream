@@ -45,10 +45,15 @@ int main(int argc, char **argv)
 	struct stat fs_stat;
 
 	bool p_idcode = false;
+	int nr_bytes_to_skip;
 
-	if (argc != 3) {
-		printf("Usage: ./parse bitstream.msk nr_icap_words\n");
-		exit(-1);
+	if (argc != 3 && argc != 4) {
+		printf("Usage: ./parse_bin.o binary_file nr_words_to_parse [nr_bytes_to_skip]\n"
+		       "Examples:\n"
+		       "       ./parse_bin.o foo.msk -1          Parse the whole file\n"
+		       "       ./parse_bin.o foo.msk -1 120       Parse the whole file, skip the first 120 bytes.\n"
+		       );
+		return 0;
 	}
 
 	fname = argv[1];
@@ -72,20 +77,23 @@ int main(int argc, char **argv)
 		return 0;
 	}
 
-	printf("File Name: %s\n", fname);
+	if (argc == 4)
+		nr_bytes_to_skip = atoi(argv[3]);
+	else
+		nr_bytes_to_skip = 0;
 
-	i = 0;
-	nr_words /= 4;
+	printf("File Name: %s nr_bytes_to_skip: %d\n", fname, nr_bytes_to_skip);
 
 	/*
 	 * If the result does not look good.
 	 * use hexdump to check file first.
 	 * Check where does the file header ASCII stuff ends.
 	 * You need to apply that shift here. 
-	 *
-	 * For VCU118: shift is 0.
 	 */
-	val_ptr = line + 0;
+	val_ptr = (int *)(line + nr_bytes_to_skip);
+
+	i = 0;
+	nr_words /= 4;
 
 	while (i < nr_words) {
 		val = *val_ptr++;
