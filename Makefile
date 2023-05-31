@@ -8,3 +8,6 @@ clean:
 
 %.o: %.c
 	gcc -g -o $@ $(CFLAGS) $(LEGO_INCLUDE) $< -lm -pthread
+
+format: $(SRCS)
+	astyle --options=_astylerc $(SRCS)

@@ -29,92 +29,111 @@
  */
 int main(int argc, char **argv)
 {
-	char *fname, *str_nr_words_to_parse;
-	int ret;
-	int i, nr_words, val;
-	FILE *fp;
-	char *line;
-	size_t len;
-	ssize_t nread;
+    char *fname, *str_nr_words_to_parse;
+    int ret;
+    int i, nr_words, val;
+    FILE *fp;
+    char *line;
+    size_t len;
+    ssize_t nread;
 
-	bool p_idcode = false;
+    bool p_idcode = false;
 
-	if (argc != 3) {
-		printf("Usage: ./parse bitstream.rba nr_icap_words\n");
-		exit(-1);
-	}
+    if (argc != 3) {
+        printf("Usage: ./parse bitstream.rba nr_icap_words\n");
+        exit(-1);
+    }
 
-	fname = argv[1];
-	str_nr_words_to_parse = argv[2];
+    fname = argv[1];
+    str_nr_words_to_parse = argv[2];
 
-	fp = fopen(fname, "r"); 
-	if (!fp) {
-		printf("Fail to open: %s\n", fname);
-		exit(-1);
-	}
+    fp = fopen(fname, "r");
 
-	nr_words = atoi(str_nr_words_to_parse);
-	printf("File Name: %s\n", fname);
+    if (!fp) {
+        printf("Fail to open: %s\n", fname);
+        exit(-1);
+    }
 
-	if (nr_words == -1)
-		nr_words = INT_MAX;
+    nr_words = atoi(str_nr_words_to_parse);
+    printf("File Name: %s\n", fname);
 
-	len = 512;
-	line = malloc(len);
+    if (nr_words == -1) {
+        nr_words = INT_MAX;
+    }
 
-	i = 0;
-	while (i < nr_words) {
-		nread = getline(&line, &len, fp);
-		if (nread == -1)
-			goto done;
+    len = 512;
+    line = malloc(len);
 
-		if (line[0] != '0' && line[0] != '1')
-			continue;
+    i = 0;
 
-		val = strtol(line, NULL, 2);
+    while (i < nr_words) {
+        nread = getline(&line, &len, fp);
 
-		//if (val != 0) {
-		if (1) {
-			printf("[%10d] %08x ", i, val);
+        if (nread == -1) {
+            goto done;
+        }
 
-			/*
-			 * Don't bother.
-			 * Just keep it ugly.
-			 */
-			if (val == 0xaa995566)
-				printf(" SYNC\n");
-			else if (val == 0x000000BB)
-				printf("Bus Width Sync\n");
-			else if (val == 0x30002001)
-				printf("Write to FAR\n");
-			else if (val == 0x28006000)
-				printf("Read from FDRO\n");
-			else if (val == 0x30000001)
-				printf("Write to CRC\n");
-			else if (val == 0x30018001) {
-				printf("Write to IDCODE\n");
-				p_idcode = true;
-			} else if (val == 0x11220044)
-				printf("Bus Width Detect\n");
-			else if (val == 0x30004000)
-				printf("Write to FDRI\n");
-			else if (val == 0x30008001)
-				printf("Write to CMD\n");
-			else if ((val & 0xf0000000) == 0x30000000) {
-				int regs;
+        if (line[0] != '0' && line[0] != '1') {
+            continue;
+        }
 
-				regs = val & 0x0003E000;
-				regs = regs >> 13;
-				printf("Write to regs %d\n", regs);
-			} else if (p_idcode) {
-				printf("IDCODE=%x\n", val & 0x0FFFFFFF);
-				p_idcode = false;
-			} else
-				printf("\n");
-		}
-		i++;
-	}
+        val = strtol(line, NULL, 2);
+
+        //if (val != 0) {
+        if (1) {
+            printf("[%10d] %08x ", i, val);
+
+            /*
+             * Don't bother.
+             * Just keep it ugly.
+             */
+            if (val == 0xaa995566) {
+                printf(" SYNC\n");
+            }
+            else if (val == 0x000000BB) {
+                printf("Bus Width Sync\n");
+            }
+            else if (val == 0x30002001) {
+                printf("Write to FAR\n");
+            }
+            else if (val == 0x28006000) {
+                printf("Read from FDRO\n");
+            }
+            else if (val == 0x30000001) {
+                printf("Write to CRC\n");
+            }
+            else if (val == 0x30018001) {
+                printf("Write to IDCODE\n");
+                p_idcode = true;
+            }
+            else if (val == 0x11220044) {
+                printf("Bus Width Detect\n");
+            }
+            else if (val == 0x30004000) {
+                printf("Write to FDRI\n");
+            }
+            else if (val == 0x30008001) {
+                printf("Write to CMD\n");
+            }
+            else if ((val & 0xf0000000) == 0x30000000) {
+                int regs;
+
+                regs = val & 0x0003E000;
+                regs = regs >> 13;
+                printf("Write to regs %d\n", regs);
+            }
+            else if (p_idcode) {
+                printf("IDCODE=%x\n", val & 0x0FFFFFFF);
+                p_idcode = false;
+            }
+            else {
+                printf("\n");
+            }
+        }
+
+        i++;
+    }
 
 done:
-	return 0;
+    return 0;
 }
